@@ -9,7 +9,7 @@ pipeline {
         AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
         
-        S3_BUCKET       = 's3://tu-bucket-backups-jenkins'
+        S3_BUCKET       = 's3://backup-jenkinsbucket'
         BACKUP_DIR      = '/var/jenkins_home/local_backups'
         IMAGE_NAME      = "jenkins-backup-tool:${BUILD_ID}"
         ENV_BRANCH      = "${env.BRANCH_NAME}"
