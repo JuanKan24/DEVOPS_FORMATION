@@ -1,9 +1,9 @@
 pipeline {
     agent any
     
-    // SOLUCIÓN DEFINITIVA: Jenkins inyectará el comando Docker automáticamente en el PATH
+    // Jenkins inyectará el comando Docker automáticamente en el PATH
     tools {
-        docker 'docker-cli'
+        dockerTool 'docker-cli'
     }
     
     triggers {
