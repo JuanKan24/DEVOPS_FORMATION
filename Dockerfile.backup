@@ -1,0 +1,8 @@
+# 1. Base ultra-liviana para ahorrar espacio y tiempo de red
+FROM alpine:latest
+
+# 2. Instalamos la AWS CLI nativa y tar para comprimir
+RUN apk add --no-cache aws-cli tar bash
+
+# Definimos un directorio de trabajo limpio
+WORKDIR /backup
