@@ -1,12 +1,16 @@
 pipeline {
     agent any
     
+    // SOLUCIÓN DEFINITIVA: Jenkins inyectará el comando Docker automáticamente en el PATH
+    tools {
+        docker 'docker-cli'
+    }
+    
     triggers {
         cron('H H * * *') 
     }
     
     environment {
-        // CAMBIO CLAVE: Inyectamos las credenciales por separado usando 'Secret Text'
         AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
         
@@ -46,7 +50,6 @@ pipeline {
         
         stage('Upload to AWS S3') {
             steps {
-                // CAMBIO CLAVE: Ahora las variables ya contienen el texto plano directamente
                 sh """
                     docker run --rm \
                     -v ${BACKUP_DIR}/${ENV_BRANCH}:/backup_source \
