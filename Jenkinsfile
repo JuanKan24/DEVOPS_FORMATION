@@ -3,7 +3,7 @@ pipeline {
     
     // Jenkins inyectará el comando Docker automáticamente en el PATH
     tools {
-        dockerTool 'docker-cli'
+        dockerTool 'docker-cli-nuevo'
     }
     
     triggers {
