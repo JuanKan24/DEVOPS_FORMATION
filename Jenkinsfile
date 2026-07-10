@@ -1,11 +1,6 @@
 pipeline {
     agent any
     
-    // Jenkins inyectará el comando Docker automáticamente en el PATH
-    tools {
-        dockerTool 'docker-cli-nuevo'
-    }
-    
     triggers {
         cron('H H * * *') 
     }
@@ -22,16 +17,32 @@ pipeline {
     }
     
     stages {
+        stage('Instalar Docker CLI Portable') {
+            steps {
+                echo "📦 Configurando Docker CLI estático y portátil..."
+                sh '''
+                    mkdir -p bin
+                    if [ ! -f bin/docker ]; then
+                        echo "⬇️ Descargando binario oficial de Docker..."
+                        curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-24.0.7.tgz | tar -xz --strip-components=1 -C bin docker/docker
+                        chmod +x bin/docker
+                    fi
+                '''
+            }
+        }
+
         stage('Validar Entorno Real') {
             steps {
-                echo " Iniciando proceso de respaldo automatizado"
-                echo " Entorno detectado: [${ENV_BRANCH.toUpperCase()}]"
+                echo "🚀 Iniciando proceso de respaldo automatizado"
+                echo "🌍 Entorno detectado: [${ENV_BRANCH.toUpperCase()}]"
+                // Verificación de seguridad para confirmar que el binario responde
+                sh "bin/docker --version"
             }
         }
         
         stage('Pre-bake Backup Image') {
             steps {
-                sh "docker build -t ${IMAGE_NAME} -f Dockerfile.backup ."
+                sh "bin/docker build -t ${IMAGE_NAME} -f Dockerfile.backup ."
             }
         }
         
@@ -39,7 +50,7 @@ pipeline {
             steps {
                 sh "mkdir -p ${BACKUP_DIR}/${ENV_BRANCH}"
                 sh """
-                    docker run --rm \
+                    bin/docker run --rm \
                     -v jenkins_home:/var/jenkins_home \
                     -v ${BACKUP_DIR}/${ENV_BRANCH}:/backup_destination \
                     ${IMAGE_NAME} \
@@ -51,7 +62,7 @@ pipeline {
         stage('Upload to AWS S3') {
             steps {
                 sh """
-                    docker run --rm \
+                    bin/docker run --rm \
                     -v ${BACKUP_DIR}/${ENV_BRANCH}:/backup_source \
                     -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
                     -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
@@ -63,7 +74,7 @@ pipeline {
         
         stage('Cleanup Images') {
             steps {
-                sh "docker rmi ${IMAGE_NAME}"
+                sh "bin/docker rmi ${IMAGE_NAME}"
             }
         }
     }
