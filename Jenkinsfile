@@ -6,7 +6,7 @@ pipeline {
     }
     
     environment {
-        // 💡 CAMBIO CLAVE: Inyectamos las credenciales por separado usando 'Secret Text'
+        // CAMBIO CLAVE: Inyectamos las credenciales por separado usando 'Secret Text'
         AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
         
@@ -20,8 +20,8 @@ pipeline {
     stages {
         stage('Validar Entorno Real') {
             steps {
-                echo "🚀 Iniciando proceso de respaldo automatizado"
-                echo "🌍 Entorno detectado: [${ENV_BRANCH.toUpperCase()}]"
+                echo " Iniciando proceso de respaldo automatizado"
+                echo " Entorno detectado: [${ENV_BRANCH.toUpperCase()}]"
             }
         }
         
@@ -46,7 +46,7 @@ pipeline {
         
         stage('Upload to AWS S3') {
             steps {
-                // 💡 CAMBIO CLAVE: Ahora las variables ya contienen el texto plano directamente
+                // CAMBIO CLAVE: Ahora las variables ya contienen el texto plano directamente
                 sh """
                     docker run --rm \
                     -v ${BACKUP_DIR}/${ENV_BRANCH}:/backup_source \
